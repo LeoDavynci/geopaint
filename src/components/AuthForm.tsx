@@ -1,12 +1,12 @@
 // components/AuthForm.tsx
 import { useState } from "react";
-import { auth } from "../firebase";
 import {
    createUserWithEmailAndPassword,
    signInWithEmailAndPassword,
 } from "firebase/auth";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
+import { auth } from "../../firebase";
 
 export default function AuthForm() {
    const [email, setEmail] = useState("");

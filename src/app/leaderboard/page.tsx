@@ -1,6 +1,7 @@
 import { collection, query, orderBy, getDocs } from "firebase/firestore";
-import { db } from "@/firebase";
+
 import { useEffect, useState } from "react";
+import { db } from "../../../firebase";
 
 export default function LeaderboardPage() {
    const [leaderboard, setLeaderboard] = useState<any[]>([]);

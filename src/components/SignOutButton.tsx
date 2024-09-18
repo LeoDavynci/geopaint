@@ -1,6 +1,6 @@
 import { signOut } from "firebase/auth";
-import { auth } from "../firebase";
 import { Button } from "./ui/button";
+import { auth } from "../../firebase";
 
 export default function SignOutButton() {
    const handleSignOut = () => {

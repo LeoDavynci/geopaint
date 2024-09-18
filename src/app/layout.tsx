@@ -1,23 +1,12 @@
-import { useEffect, useState } from "react";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../firebase";
+import "./globals.css";
+import { ReactNode } from "react";
 
-export default function RootLayout({ children }) {
-   const [user, setUser] = useState(null);
-
-   useEffect(() => {
-      const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-         setUser(currentUser);
-      });
-      return () => unsubscribe();
-   }, []);
-
+export default function RootLayout({ children }: { children: ReactNode }) {
    return (
-      <div>
-         <header>
-            {user ? `Logged in as ${user.email}` : "Not logged in"}
-         </header>
-         {children}
-      </div>
+      <html lang="en">
+         <body>
+            <main>{children}</main>
+         </body>
+      </html>
    );
 }

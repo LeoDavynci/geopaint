@@ -1,5 +1,5 @@
 import { doc, setDoc } from "firebase/firestore";
-import { db, auth } from "../firebase";
+import { auth, db } from "../../firebase";
 
 export default async function saveScore(score: number) {
    const user = auth.currentUser;
