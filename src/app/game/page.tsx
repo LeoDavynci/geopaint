@@ -10,21 +10,29 @@ import { fetchQuestion, saveScore } from "@/lib/gameLogic"; // Custom functions 
 // Dynamically import Map component to avoid SSR issues
 const Map = dynamic(() => import("@/components/GameMap"), { ssr: false });
 
+// Define types for question data
+interface QuestionData {
+   question: string;
+   correct_answer: string;
+   incorrect_answers: string[];
+   image?: string; // Optional image
+}
+
 export default function GamePage() {
-   // State variables
-   const [question, setQuestion] = useState(null); // Current question
-   const [score, setScore] = useState(0); // Current score (countries conquered)
-   const [timeLeft, setTimeLeft] = useState(300); // 5-minute timer (300 seconds)
-   const [gameOver, setGameOver] = useState(false); // To track if the game is over
+   // State variables with appropriate types
+   const [question, setQuestion] = useState<QuestionData | null>(null); // Current question
+   const [score, setScore] = useState<number>(0); // Current score (countries conquered)
+   const [timeLeft, setTimeLeft] = useState<number>(300); // 5-minute timer (300 seconds)
+   const [gameOver, setGameOver] = useState<boolean>(false); // To track if the game is over
 
    // Fetch a new question when the game starts
-   const getNewQuestion = async () => {
-      const newQuestion = await fetchQuestion(); // Fetch the question from the server or database
+   const getNewQuestion = async (): Promise<void> => {
+      const newQuestion = await fetchQuestion(); // Fetch the question from the server (Open Trivia DB and Unsplash)
       setQuestion(newQuestion);
    };
 
    // Handle answer submission
-   const handleAnswerSubmit = (isCorrect) => {
+   const handleAnswerSubmit = (isCorrect: boolean): void => {
       if (isCorrect) {
          setScore((prev) => prev + 1); // Update score if the answer is correct
       }
@@ -32,7 +40,7 @@ export default function GamePage() {
    };
 
    // Handle game end
-   const handleGameEnd = () => {
+   const handleGameEnd = (): void => {
       setGameOver(true);
       saveScore(score); // Save the score (to Firebase or another storage)
    };
@@ -74,7 +82,7 @@ export default function GamePage() {
          <Timer timeLeft={timeLeft} />
 
          {/* Map Display */}
-         <Map conqueredCountries={score} />
+         {/* <Map conqueredCountries={score} /> */}
 
          {/* Question Component */}
          {question && (

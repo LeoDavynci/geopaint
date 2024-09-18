@@ -1,28 +1,42 @@
-// lib/gameLogic.js
-import { db } from "@/firebase"; // Assume Firebase is set up
+// src/lib/gameLogic.js
 
-// Fetch a random geography question
+let questionCache = [];
+
 export async function fetchQuestion() {
-   const questions = [
-      {
-         questionText: "What is the capital of France?",
-         options: ["Paris", "London", "Berlin"],
-         correctAnswer: "Paris",
-      },
-      // Add more questions...
-   ];
-   return questions[Math.floor(Math.random() * questions.length)];
+   try {
+      // If we have cached questions, return the first one
+      if (questionCache.length > 0) {
+         return questionCache.shift();
+      }
+
+      // Fetch question from Open Trivia Database
+      const questionResponse = await fetch(
+         "https://opentdb.com/api.php?amount=1&category=22&type=multiple"
+      );
+
+      if (!questionResponse.ok) {
+         throw new Error(
+            `Failed to fetch questions: ${questionResponse.status}`
+         );
+      }
+
+      const questionData = await questionResponse.json();
+
+      // Check if results exist and are not empty
+      if (!questionData.results || questionData.results.length === 0) {
+         throw new Error("No questions returned from Open Trivia Database");
+      }
+
+      // Store the fetched questions in the cache
+      questionCache = questionData.results;
+
+      return questionCache.shift();
+   } catch (error) {
+      console.error("Error fetching question:", error.message);
+      throw error; // Rethrow the error for handling in the component
+   }
 }
 
-// Save the score to the database
 export async function saveScore(score) {
-   const user = auth.currentUser;
-   if (user) {
-      await setDoc(doc(db, "leaderboard", user.uid), {
-         username: user.email,
-         score: score,
-         timestamp: new Date(),
-      });
-      console.log("Score saved successfully");
-   }
+   // Save the score logic here (e.g., save to Firebase or local storage)
 }

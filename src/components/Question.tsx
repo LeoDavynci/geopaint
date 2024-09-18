@@ -1,19 +1,57 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 
-export default function Question({ questionData, onSubmit }) {
-   const [selectedAnswer, setSelectedAnswer] = useState(null);
+// Helper function to shuffle the answer options
+function shuffleArray(array: string[]): string[] {
+   return array
+      .map((value) => ({ value, sort: Math.random() }))
+      .sort((a, b) => a.sort - b.sort)
+      .map(({ value }) => value);
+}
+
+interface QuestionProps {
+   questionData: {
+      question: string;
+      correct_answer: string;
+      incorrect_answers: string[];
+      image?: string; // Image is optional
+   };
+   onSubmit: (isCorrect: boolean) => void;
+}
+
+export default function Question({ questionData, onSubmit }: QuestionProps) {
+   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+   const [shuffledOptions, setShuffledOptions] = useState<string[]>([]);
+
+   // Shuffle the answer options when the component loads
+   useEffect(() => {
+      const allOptions = [
+         ...questionData.incorrect_answers,
+         questionData.correct_answer,
+      ];
+      setShuffledOptions(shuffleArray(allOptions)); // Shuffle the options
+   }, [questionData]);
 
    const handleSubmit = () => {
-      const isCorrect = selectedAnswer === questionData.correctAnswer;
-      onSubmit(isCorrect); // Pass whether the answer is correct or not
+      const isCorrect = selectedAnswer === questionData.correct_answer;
+      onSubmit(isCorrect);
    };
 
    return (
       <div className="p-4 bg-white shadow-md rounded-lg space-y-4">
-         <h2 className="text-2xl font-bold">{questionData.questionText}</h2>
+         <h2 className="text-2xl font-bold">{questionData.question}</h2>
+
+         {/* Display the image clue (if available) */}
+         {/* {questionData.image && (
+            <img
+               src={questionData.image}
+               alt={`${questionData.correct_answer} Landmark`} // Accessibility improvement
+               className="w-full h-auto object-cover rounded-lg"
+            />
+         )} */}
+
          <div className="space-y-2">
-            {questionData.options.map((option, index) => (
+            {shuffledOptions.map((option, index) => (
                <Button
                   key={index}
                   onClick={() => setSelectedAnswer(option)}
@@ -25,9 +63,15 @@ export default function Question({ questionData, onSubmit }) {
                </Button>
             ))}
          </div>
+
          <Button
             onClick={handleSubmit}
-            className="mt-4 bg-green-500 text-white px-4 py-2 rounded-lg"
+            disabled={!selectedAnswer} // Disable if no answer is selected
+            className={`mt-4 ${
+               selectedAnswer
+                  ? "bg-green-500"
+                  : "bg-gray-500 cursor-not-allowed"
+            } text-white px-4 py-2 rounded-lg`}
          >
             Submit Answer
          </Button>
