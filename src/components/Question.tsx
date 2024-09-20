@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 
-// Helper function to shuffle the answer options
 function shuffleArray(array: string[]): string[] {
    return array
       .map((value) => ({ value, sort: Math.random() }))
@@ -14,7 +13,7 @@ interface QuestionProps {
       question: string;
       correct_answer: string;
       incorrect_answers: string[];
-      image?: string; // Image is optional
+      image?: string;
    };
    onSubmit: (isCorrect: boolean) => void;
 }
@@ -23,13 +22,12 @@ export default function Question({ questionData, onSubmit }: QuestionProps) {
    const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
    const [shuffledOptions, setShuffledOptions] = useState<string[]>([]);
 
-   // Shuffle the answer options when the component loads
    useEffect(() => {
       const allOptions = [
          ...questionData.incorrect_answers,
          questionData.correct_answer,
       ];
-      setShuffledOptions(shuffleArray(allOptions)); // Shuffle the options
+      setShuffledOptions(shuffleArray(allOptions));
    }, [questionData]);
 
    const handleSubmit = () => {
@@ -40,15 +38,6 @@ export default function Question({ questionData, onSubmit }: QuestionProps) {
    return (
       <div className="p-4 bg-white shadow-md rounded-lg space-y-4">
          <h2 className="text-2xl font-bold">{questionData.question}</h2>
-
-         {/* Display the image clue (if available) */}
-         {/* {questionData.image && (
-            <img
-               src={questionData.image}
-               alt={`${questionData.correct_answer} Landmark`} // Accessibility improvement
-               className="w-full h-auto object-cover rounded-lg"
-            />
-         )} */}
 
          <div className="space-y-2">
             {shuffledOptions.map((option, index) => (
@@ -66,7 +55,7 @@ export default function Question({ questionData, onSubmit }: QuestionProps) {
 
          <Button
             onClick={handleSubmit}
-            disabled={!selectedAnswer} // Disable if no answer is selected
+            disabled={!selectedAnswer}
             className={`mt-4 ${
                selectedAnswer
                   ? "bg-green-500"

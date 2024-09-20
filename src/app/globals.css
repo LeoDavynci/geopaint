@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 
 :root {
    --background: #ffffff;
@@ -87,6 +88,33 @@ body {
       @apply border-border;
    }
    body {
-      @apply bg-background text-foreground;
+      @apply bg-background text-foreground text-black;
    }
+}
+
+/* Test colors for backgrounds */
+
+.center {
+}
+
+.testred {
+   background: #ff0000 !important; /* Red */
+}
+.testorange {
+   background: #ffa500 !important; /* Orange */
+}
+.testyellow {
+   background: #ffff00 !important; /* Yellow */
+}
+.testgreen {
+   background: #008000 !important; /* Green */
+}
+.testblue {
+   background: #0000ff !important; /* Blue */
+}
+.testpurple {
+   background: #800080 !important; /* Purple */
+}
+.testpink {
+   background: #ffc0cb !important; /* Pink */
 }
