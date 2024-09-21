@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import dynamic from "next/dynamic";
 import Timer from "@/components/Timer";
 import { fetchQuestion, removeRandomTile } from "@/lib/gameLogic";
@@ -226,45 +226,47 @@ export default function GamePage() {
 
    return (
       <div className="min-h-screen px-32 pt-32 background-gradient">
-         <div className="flex flex-row center">
-            <div className="flex justify-between w-1/2 center">
-               <Map
-                  grid={grid}
-                  onTilePlace={handleTilePlace}
-                  gameOver={false}
-               />
-            </div>
-            <div className="flex flex-col w-1/2 p-4 gap-4 h-full">
-               <div className="flex justify-between w-full">
-                  <div className="rounded-md bg-gray-100 py-2 px-4">
-                     <Timer timeLeft={timeLeft} />
-                  </div>
-                  <div className="rounded-md bg-gray-100 py-2 px-4">
-                     <Money amount={money} />
-                  </div>
-                  <div className="rounded-md bg-gray-100 py-2 px-4">
-                     <Score score={score} />
-                  </div>
-               </div>
-               <div className="center w-full bg-gray-100 rounded-lg">
-                  <TileBank
-                     onTileSelect={(tileType: TileType) =>
-                        setSelectedTileType(tileType)
-                     }
-                     tileCosts={tileCosts}
-                     money={money}
+         <Suspense fallback={<div>Loading game...</div>}>
+            <div className="flex flex-row center">
+               <div className="flex justify-between w-1/2 center">
+                  <Map
+                     grid={grid}
+                     onTilePlace={handleTilePlace}
+                     gameOver={false}
                   />
                </div>
-               <div className="w-full h-1/2">
-                  {question && (
-                     <Question
-                        questionData={question}
-                        onSubmit={handleAnswerSubmit}
+               <div className="flex flex-col w-1/2 p-4 gap-4 h-full">
+                  <div className="flex justify-between w-full">
+                     <div className="rounded-md bg-gray-100 py-2 px-4">
+                        <Timer timeLeft={timeLeft} />
+                     </div>
+                     <div className="rounded-md bg-gray-100 py-2 px-4">
+                        <Money amount={money} />
+                     </div>
+                     <div className="rounded-md bg-gray-100 py-2 px-4">
+                        <Score score={score} />
+                     </div>
+                  </div>
+                  <div className="center w-full bg-gray-100 rounded-lg">
+                     <TileBank
+                        onTileSelect={(tileType: TileType) =>
+                           setSelectedTileType(tileType)
+                        }
+                        tileCosts={tileCosts}
+                        money={money}
                      />
-                  )}
+                  </div>
+                  <div className="w-full h-1/2">
+                     {question && (
+                        <Question
+                           questionData={question}
+                           onSubmit={handleAnswerSubmit}
+                        />
+                     )}
+                  </div>
                </div>
             </div>
-         </div>
+         </Suspense>
       </div>
    );
 }
