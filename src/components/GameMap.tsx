@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 
 const tileCosts = {
    Red: 1,
@@ -45,12 +45,98 @@ const tileColors: Record<TileType, string> = {
    Gray: "bg-gray-500",
 };
 
+// Custom debounce hook
+const useDebounce = (func: (...args: any[]) => void, delay: number) => {
+   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+   const debouncedFunc = useCallback(
+      (...args: any[]) => {
+         if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+         }
+
+         timeoutRef.current = setTimeout(() => {
+            func(...args);
+         }, delay);
+      },
+      [func, delay]
+   );
+
+   useEffect(() => {
+      return () => {
+         if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+         }
+      };
+   }, []);
+
+   return debouncedFunc;
+};
+
 const GameMap: React.FC<GameMapProps> = ({ grid, onTilePlace, gameOver }) => {
    const [scale, setScale] = useState(1);
-   const [panning, setPanning] = useState(false);
-   const [position, setPosition] = useState({ x: 0, y: 0 });
-   const [startPosition, setStartPosition] = useState({ x: 0, y: 0 });
+   const [isDragging, setIsDragging] = useState(false);
    const containerRef = useRef<HTMLDivElement>(null);
+   const lastPlacedTileRef = useRef<{ row: number; col: number } | null>(null);
+
+   const debouncedTilePlace = useDebounce((row: number, col: number) => {
+      if (
+         lastPlacedTileRef.current?.row !== row ||
+         lastPlacedTileRef.current?.col !== col
+      ) {
+         onTilePlace(row, col);
+         lastPlacedTileRef.current = { row, col };
+      }
+   }, 50); // 50ms debounce delay
+
+   const handleMouseDown = (e: React.MouseEvent) => {
+      if (gameOver) return;
+      setIsDragging(true);
+      handleTilePlacement(e);
+   };
+
+   const handleMouseMove = (e: React.MouseEvent) => {
+      if (isDragging) {
+         handleTilePlacement(e);
+      }
+   };
+
+   const handleMouseUp = () => {
+      setIsDragging(false);
+      lastPlacedTileRef.current = null;
+   };
+
+   const handleTilePlacement = (e: React.MouseEvent) => {
+      const gridElement = document.getElementById("grid");
+      if (!gridElement) return;
+
+      const rect = gridElement.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      const colWidth = rect.width / grid[0].length;
+      const rowHeight = rect.height / grid.length;
+
+      const col = Math.floor(x / colWidth);
+      const row = Math.floor(y / rowHeight);
+
+      if (row >= 0 && row < grid.length && col >= 0 && col < grid[0].length) {
+         debouncedTilePlace(row, col);
+      }
+   };
+
+   useEffect(() => {
+      const handleGlobalMouseUp = () => {
+         setIsDragging(false);
+         lastPlacedTileRef.current = null;
+      };
+
+      window.addEventListener("mouseup", handleGlobalMouseUp);
+
+      return () => {
+         window.removeEventListener("mouseup", handleGlobalMouseUp);
+      };
+   }, []);
 
    return (
       <div
@@ -62,9 +148,13 @@ const GameMap: React.FC<GameMapProps> = ({ grid, onTilePlace, gameOver }) => {
             position: "relative",
          }}
          ref={containerRef}
+         onMouseDown={handleMouseDown}
+         onMouseMove={handleMouseMove}
+         onMouseUp={handleMouseUp}
+         onMouseLeave={handleMouseUp}
       >
          <div
-            id="grid" // <-- Add this ID so the grid can be captured
+            id="grid"
             className="grid absolute"
             style={{
                gridTemplateColumns: `repeat(${grid.length}, minmax(0, 1fr))`,
@@ -77,7 +167,7 @@ const GameMap: React.FC<GameMapProps> = ({ grid, onTilePlace, gameOver }) => {
                   <div
                      key={`${rowIndex}-${colIndex}`}
                      className={`aspect-square ${tileColors[tile.type]} ${
-                        !gameOver ? "cursor-pointer hover:bg-gray-200" : ""
+                        !gameOver ? "cursor-pointer hover:bg-opacity-75" : ""
                      } ${
                         !gameOver && tile.type !== "empty"
                            ? "hover:ring-2 hover:ring-black"
@@ -87,9 +177,6 @@ const GameMap: React.FC<GameMapProps> = ({ grid, onTilePlace, gameOver }) => {
                            ? "bg-transparent"
                            : ""
                      }`}
-                     onClick={() =>
-                        !gameOver && onTilePlace(rowIndex, colIndex)
-                     }
                   />
                ))
             )}

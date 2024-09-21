@@ -1,13 +1,13 @@
 let questionCache = [];
 
-export async function fetchQuestion() {
+export async function fetchQuestion(difficulty) {
    try {
       if (questionCache.length > 0) {
          return questionCache.shift();
       }
 
       const questionResponse = await fetch(
-         "https://opentdb.com/api.php?amount=10&category=22&type=multiple"
+         `https://opentdb.com/api.php?amount=10&category=22&difficulty=${difficulty}&type=multiple`
       );
 
       if (!questionResponse.ok) {

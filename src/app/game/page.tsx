@@ -9,7 +9,7 @@ import TileBank from "@/components/TileBank";
 import Money from "@/components/Money";
 import Score from "@/components/Score";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { storage } from "../../../firebase";
 import { ref, uploadString } from "firebase/storage";
 import { toPng } from "html-to-image";
@@ -51,10 +51,13 @@ const INITIAL_MONEY = 0;
 const MONEY_TIMEOUT = 10;
 
 export default function GamePage() {
+   const time = 300;
    const router = useRouter();
+   const searchParams = useSearchParams(); // Get the search params object
+   const difficulty = searchParams?.get("difficulty") || "medium";
    const [question, setQuestion] = useState<QuestionData | null>(null);
    const [score, setScore] = useState<number>(0);
-   const [timeLeft, setTimeLeft] = useState<number>(10);
+   const [timeLeft, setTimeLeft] = useState<number>(time);
    const [gameOver, setGameOver] = useState<boolean>(false);
    const [grid, setGrid] = useState<Tile[][]>(() =>
       Array.from({ length: GRID_SIZE }, () =>
@@ -67,9 +70,13 @@ export default function GamePage() {
    );
    const [moneyTimeout, setMoneyTimeout] = useState<number>(MONEY_TIMEOUT);
    const dingSoundRef = useRef<HTMLAudioElement | null>(null);
-   const getNewQuestion = async (): Promise<void> => {
+
+   const getNewQuestion = async () => {
       try {
-         const newQuestion = await fetchQuestion();
+         // Pass difficulty to fetchQuestion
+         const newQuestion = await fetchQuestion(
+            (difficulty as string) || "medium"
+         );
          setQuestion(newQuestion);
       } catch (error) {
          console.error("Failed to fetch question", error);
@@ -160,7 +167,7 @@ export default function GamePage() {
          const artRef = ref(storage, `artworks/${Date.now()}.png`);
          await uploadString(artRef, dataUrl, "data_url");
 
-         console.log("Image successfully uploaded!");
+         goToMainMenu();
       } catch (error) {
          console.error("Error saving image", error);
       }
@@ -230,12 +237,12 @@ export default function GamePage() {
 
    return (
       <div
-         className="min-h-screen px-32 pt-32"
-         style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-         }}
+         className="min-h-screen px-32 pt-32 background-gradient"
+         // style={{
+         //    backgroundImage: `url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')`,
+         //    backgroundSize: "cover",
+         //    backgroundPosition: "center",
+         // }}
       >
          <div className="flex flex-row center">
             <div className="flex justify-between w-1/2 center">
