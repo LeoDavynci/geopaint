@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import Timer from "@/components/Timer";
-import { fetchQuestion, saveScore, removeRandomTile } from "@/lib/gameLogic";
+import { fetchQuestion, removeRandomTile } from "@/lib/gameLogic";
 import Question from "@/components/Question";
 import TileBank from "@/components/TileBank";
 import Money from "@/components/Money";
@@ -40,7 +40,7 @@ const tileCosts = {
    Gray: 1,
 } as const;
 
-type TileType = keyof typeof tileCosts | "empty";
+type TileType = keyof typeof tileCosts;
 
 interface Tile {
    type: TileType;
@@ -53,7 +53,7 @@ const MONEY_TIMEOUT = 10;
 export default function GamePage() {
    const time = 300;
    const router = useRouter();
-   const searchParams = useSearchParams(); // Get the search params object
+   const searchParams = useSearchParams();
    const difficulty = searchParams?.get("difficulty") || "medium";
    const [question, setQuestion] = useState<QuestionData | null>(null);
    const [score, setScore] = useState<number>(0);
@@ -73,10 +73,7 @@ export default function GamePage() {
 
    const getNewQuestion = async () => {
       try {
-         // Pass difficulty to fetchQuestion
-         const newQuestion = await fetchQuestion(
-            (difficulty as string) || "medium"
-         );
+         const newQuestion = await fetchQuestion(difficulty);
          setQuestion(newQuestion);
       } catch (error) {
          console.error("Failed to fetch question", error);
@@ -87,7 +84,7 @@ export default function GamePage() {
       if (isCorrect) {
          const reward = 5;
          setMoney((prevMoney) => prevMoney + reward);
-         setMoneyTimeout(MONEY_TIMEOUT); // Reset money timeout
+         setMoneyTimeout(MONEY_TIMEOUT);
          setScore((prevScore) => prevScore + 1);
          if (dingSoundRef.current) {
             dingSoundRef.current.play();
@@ -102,7 +99,6 @@ export default function GamePage() {
    };
 
    const getRefundAmount = (tileType: TileType): number => {
-      if (tileType === "empty") return 0;
       return Math.floor(tileCosts[tileType]);
    };
 
@@ -112,7 +108,6 @@ export default function GamePage() {
       const currentTile = grid[row][col];
 
       if (currentTile.type !== "empty") {
-         // Remove the tile and refund money
          const refundAmount = getRefundAmount(currentTile.type);
          setGrid((prevGrid) =>
             prevGrid.map((r, rowIndex) =>
@@ -124,13 +119,12 @@ export default function GamePage() {
             )
          );
          setMoney((prevMoney) => prevMoney + refundAmount);
-         setMoneyTimeout(MONEY_TIMEOUT); // Reset money timeout
+         setMoneyTimeout(MONEY_TIMEOUT);
       } else if (
          selectedTileType &&
          selectedTileType !== "empty" &&
          money >= tileCosts[selectedTileType]
       ) {
-         // Place a new tile
          setGrid((prevGrid) =>
             prevGrid.map((r, rowIndex) =>
                rowIndex === row
@@ -141,13 +135,12 @@ export default function GamePage() {
             )
          );
          setMoney((prevMoney) => prevMoney - tileCosts[selectedTileType]);
-         setMoneyTimeout(MONEY_TIMEOUT); // Reset money timeout
+         setMoneyTimeout(MONEY_TIMEOUT);
       }
    };
 
    const handleGameEnd = (): void => {
       setGameOver(true);
-      saveScore(score);
    };
 
    const saveArt = async () => {
@@ -159,11 +152,9 @@ export default function GamePage() {
       }
 
       try {
-         // Convert the grid element to a PNG image
          const dataUrl = await toPng(gridElement);
-         console.log(dataUrl); // Check if the image is generated correctly
+         console.log(dataUrl);
 
-         // Save to Firebase Storage
          const artRef = ref(storage, `artworks/${Date.now()}.png`);
          await uploadString(artRef, dataUrl, "data_url");
 
@@ -177,7 +168,6 @@ export default function GamePage() {
       router.push("/main");
    };
 
-   // Timer for overall game
    useEffect(() => {
       if (timeLeft > 0 && !gameOver) {
          const timer = setInterval(() => {
@@ -189,7 +179,6 @@ export default function GamePage() {
       }
    }, [timeLeft, gameOver]);
 
-   // Timer for money timeout
    useEffect(() => {
       if (moneyTimeout > 0 && !gameOver && money > 0) {
          const moneyTimer = setInterval(() => {
@@ -197,7 +186,7 @@ export default function GamePage() {
          }, 1000);
          return () => clearInterval(moneyTimer);
       } else if (moneyTimeout === 0) {
-         setMoney(0); // Reset money if not spent in time
+         setMoney(0);
       }
    }, [moneyTimeout, gameOver, money]);
 
@@ -236,14 +225,7 @@ export default function GamePage() {
    }
 
    return (
-      <div
-         className="min-h-screen px-32 pt-32 background-gradient"
-         // style={{
-         //    backgroundImage: `url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')`,
-         //    backgroundSize: "cover",
-         //    backgroundPosition: "center",
-         // }}
-      >
+      <div className="min-h-screen px-32 pt-32 background-gradient">
          <div className="flex flex-row center">
             <div className="flex justify-between w-1/2 center">
                <Map

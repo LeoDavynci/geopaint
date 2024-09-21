@@ -1,22 +1,20 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 
-const tileCosts = {
-   Red: 1,
-   Orange: 1,
-   Yellow: 1,
-   Lime: 1,
-   Green: 1,
-   LightBlue: 1,
-   Blue: 1,
-   Purple: 1,
-   Pink: 1,
-   Brown: 1,
-   Black: 1,
-   White: 1,
-   Gray: 1,
-} as const;
-
-type TileType = keyof typeof tileCosts | "empty";
+type TileType =
+   | "Red"
+   | "Orange"
+   | "Yellow"
+   | "Lime"
+   | "Green"
+   | "LightBlue"
+   | "Blue"
+   | "Purple"
+   | "Pink"
+   | "Brown"
+   | "Black"
+   | "White"
+   | "Gray"
+   | "empty";
 
 interface Tile {
    type: TileType;
@@ -45,12 +43,14 @@ const tileColors: Record<TileType, string> = {
    Gray: "bg-gray-500",
 };
 
-// Custom debounce hook
-const useDebounce = (func: (...args: any[]) => void, delay: number) => {
+const useDebounce = <T extends (...args: any[]) => void>(
+   func: T,
+   delay: number
+): T => {
    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
    const debouncedFunc = useCallback(
-      (...args: any[]) => {
+      (...args: Parameters<T>) => {
          if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
          }
@@ -60,7 +60,7 @@ const useDebounce = (func: (...args: any[]) => void, delay: number) => {
          }, delay);
       },
       [func, delay]
-   );
+   ) as T;
 
    useEffect(() => {
       return () => {
@@ -74,7 +74,6 @@ const useDebounce = (func: (...args: any[]) => void, delay: number) => {
 };
 
 const GameMap: React.FC<GameMapProps> = ({ grid, onTilePlace, gameOver }) => {
-   const [scale, setScale] = useState(1);
    const [isDragging, setIsDragging] = useState(false);
    const containerRef = useRef<HTMLDivElement>(null);
    const lastPlacedTileRef = useRef<{ row: number; col: number } | null>(null);
@@ -158,8 +157,8 @@ const GameMap: React.FC<GameMapProps> = ({ grid, onTilePlace, gameOver }) => {
             className="grid absolute"
             style={{
                gridTemplateColumns: `repeat(${grid.length}, minmax(0, 1fr))`,
-               width: `${100 * scale}%`,
-               height: `${100 * scale}%`,
+               width: "100%",
+               height: "100%",
             }}
          >
             {grid.map((row, rowIndex) =>

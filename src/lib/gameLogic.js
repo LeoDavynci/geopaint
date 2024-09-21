@@ -29,10 +29,6 @@ export async function fetchQuestion(difficulty) {
    }
 }
 
-export async function saveScore(score) {
-   // Save score logic (to Firebase or local storage)
-}
-
 export function removeRandomTile(grid) {
    const filledTiles = [];
    for (let row = 0; row < grid.length; row++) {
