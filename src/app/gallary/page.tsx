@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ref, listAll, getDownloadURL } from "firebase/storage";
-import { storage } from "../../../firebase";
+import { db, storage } from "../../../firebase";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 
