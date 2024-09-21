@@ -1,6 +1,6 @@
 # **<h1 align=center> GEOPAINT </h1>**
 
-'npm run dev' to play the game
+https://geopainter.vercel.app/main
 
 ## Overview
 
