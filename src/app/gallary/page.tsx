@@ -2,14 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { ref, listAll, getDownloadURL } from "firebase/storage";
-import { db, storage } from "../../../firebase";
+import { storage } from "../../../firebase";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 
 const ArtworksPage = () => {
    const [artworks, setArtworks] = useState<string[]>([]); // Store image URLs
-   const [loading, setLoading] = useState<boolean>(true);
-   const [error, setError] = useState<string | null>(null);
 
    const router = useRouter();
 
@@ -32,10 +30,8 @@ const ArtworksPage = () => {
             );
 
             setArtworks(urls); // Set the image URLs
-            setLoading(false);
          } catch (error) {
-            setError("Failed to load artworks.");
-            setLoading(false);
+            console.error("Error fetching artworks:", error);
          }
       };
 
