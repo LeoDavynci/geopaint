@@ -1,36 +1,22 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# **<h1 align=center> GEOPAINT </h1>**
 
-## Getting Started
+'npm run dev' to play the game
 
-First, run the development server:
+## Overview
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+GeoPaint is a game where you are able to learn about world geography while at the same time expresing your artistic talent. 
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**How to Play**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Each game lasts for 5 minutes and with each question, you will be given 5 pixels to place on the canvas. However with each incorrect answer, it will randomly remove a pixel from your canvas so be careful! Don't think about banking your pixels to hide from the incorrect asnwers because if you go 10 seconds without using any, all your pixels will delete.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**Gallary**
 
-## Learn More
+After a game, you can choose to save it to the gallary where other players will be able to view your art or you can choose to leave to the main menu.
 
-To learn more about Next.js, take a look at the following resources:
+**Technology**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+React, Next, ShadCN, Firebase, Firestore, NodeJS, Vercel
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Have Fun!
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
