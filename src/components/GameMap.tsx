@@ -1,56 +1,98 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
+
+const tileCosts = {
+   Red: 1,
+   Orange: 1,
+   Yellow: 1,
+   Lime: 1,
+   Green: 1,
+   LightBlue: 1,
+   Blue: 1,
+   Purple: 1,
+   Pink: 1,
+   Brown: 1,
+   Black: 1,
+   White: 1,
+   Gray: 1,
+} as const;
+
+type TileType = keyof typeof tileCosts | "empty";
 
 interface Tile {
-   type: string; // 'empty', 'land', 'water', 'sand', etc.
+   type: TileType;
 }
 
 interface GameMapProps {
-   grid: Tile[][]; // Pass the grid from the parent component
-   onTilePlace: (row: number, col: number, tileType: string) => void; // Function to handle tile placement
+   grid: Tile[][];
+   onTilePlace: (row: number, col: number) => void;
+   gameOver: boolean;
 }
 
-const GameMap = ({ grid, onTilePlace }: GameMapProps) => {
-   const handleDrop = (
-      event: React.DragEvent<HTMLDivElement>,
-      row: number,
-      col: number
-   ) => {
-      event.preventDefault();
-      const tileType = event.dataTransfer.getData("tileType"); // Get the dragged tile type
-      if (grid[row][col].type === "empty" && tileType) {
-         onTilePlace(row, col, tileType); // Call the function to place the tile in this specific cell
-      }
-   };
+const tileColors: Record<TileType, string> = {
+   empty: "bg-white",
+   Red: "bg-red-500",
+   Orange: "bg-orange-500",
+   Yellow: "bg-yellow-500",
+   Lime: "bg-lime-500",
+   Green: "bg-green-500",
+   LightBlue: "bg-blue-200",
+   Blue: "bg-blue-500",
+   Purple: "bg-purple-500",
+   Pink: "bg-pink-500",
+   Brown: "bg-amber-700",
+   Black: "bg-black",
+   White: "bg-white",
+   Gray: "bg-gray-500",
+};
 
-   const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
-      event.preventDefault(); // Allow drag over empty tiles
-   };
+const GameMap: React.FC<GameMapProps> = ({ grid, onTilePlace, gameOver }) => {
+   const [scale, setScale] = useState(1);
+   const [panning, setPanning] = useState(false);
+   const [position, setPosition] = useState({ x: 0, y: 0 });
+   const [startPosition, setStartPosition] = useState({ x: 0, y: 0 });
+   const containerRef = useRef<HTMLDivElement>(null);
 
    return (
-      <div className="grid grid-cols-10 gap-1">
-         {grid.map((row, rowIndex) =>
-            row.map((tile, colIndex) => (
-               <div
-                  key={`${rowIndex}-${colIndex}`} // Unique key for each tile
-                  className={`tile ${tile.type}`}
-                  onDrop={(event) => handleDrop(event, rowIndex, colIndex)} // Handle tile drop for the specific cell
-                  onDragOver={handleDragOver} // Allow drag over empty tiles
-                  style={{
-                     width: "30px",
-                     height: "30px",
-                     border: "1px solid black",
-                     backgroundColor:
-                        tile.type === "empty"
-                           ? "white"
-                           : tile.type === "land"
-                           ? "green"
-                           : tile.type === "water"
-                           ? "blue"
-                           : "yellow",
-                  }}
-               />
-            ))
-         )}
+      <div
+         className="overflow-hidden"
+         style={{
+            width: "100%",
+            maxWidth: "600px",
+            height: "600px",
+            position: "relative",
+         }}
+         ref={containerRef}
+      >
+         <div
+            className="grid absolute"
+            style={{
+               gridTemplateColumns: `repeat(${grid.length}, minmax(0, 1fr))`,
+               width: `${100 * scale}%`,
+               height: `${100 * scale}%`,
+            }}
+         >
+            {grid.map((row, rowIndex) =>
+               row.map((tile, colIndex) => (
+                  <div
+                     key={`${rowIndex}-${colIndex}`}
+                     className={`aspect-square ${tileColors[tile.type]} ${
+                        !gameOver ? "cursor-pointer hover:bg-gray-200" : ""
+                     } ${
+                        !gameOver && tile.type !== "empty"
+                           ? "hover:ring-2 hover:ring-black"
+                           : ""
+                     } ${
+                        gameOver && tile.type === "empty"
+                           ? "bg-transparent"
+                           : ""
+                     }`}
+                     onClick={() =>
+                        !gameOver && onTilePlace(rowIndex, colIndex)
+                     }
+                  />
+               ))
+            )}
+         </div>
       </div>
    );
 };

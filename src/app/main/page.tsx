@@ -33,13 +33,13 @@ export default function MainPage() {
             <Button className="" onClick={handleLeaderboard}>
                Leaderboard
             </Button>
-            {!isAuthenticated ? (
+            {/* {!isAuthenticated ? (
                <Button className="" onClick={handleLoginSignup}>
                   Login
                </Button>
             ) : (
                <Button className="">View Account</Button>
-            )}
+            )} */}
          </div>
       </div>
    );

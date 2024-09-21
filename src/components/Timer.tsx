@@ -7,7 +7,7 @@ export default function Timer({ timeLeft }: TimerProps) {
    const seconds = timeLeft % 60;
 
    return (
-      <div className="text-2xl font-bold">
+      <div className="text-2xl font-bold text-black">
          Time Left: {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
       </div>
    );

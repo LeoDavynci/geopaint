@@ -86,15 +86,23 @@ body {
 @layer base {
    * {
       @apply border-border;
+      box-sizing: border-box;
    }
    body {
       @apply bg-background text-foreground text-black;
    }
 }
 
+* {
+   box-sizing: border-box;
+}
+
 /* Test colors for backgrounds */
 
 .center {
+   display: flex;
+   justify-content: center;
+   align-items: center;
 }
 
 .testred {
