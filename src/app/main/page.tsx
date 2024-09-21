@@ -13,12 +13,8 @@ export default function MainPage() {
       router.push("/game");
    };
 
-   const handleLoginSignup = () => {
-      router.push("/auth");
-   };
-
    const handleLeaderboard = () => {
-      router.push("/leaderboard");
+      router.push("/gallary");
    };
 
    return (
@@ -31,7 +27,7 @@ export default function MainPage() {
             </Button>
 
             <Button className="" onClick={handleLeaderboard}>
-               History
+               Gallary
             </Button>
             {/* {!isAuthenticated ? (
                <Button className="" onClick={handleLoginSignup}>
