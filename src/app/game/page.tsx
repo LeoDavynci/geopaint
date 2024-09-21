@@ -53,8 +53,7 @@ const MONEY_TIMEOUT = 10;
 export default function GamePage() {
    const time = 300;
    const router = useRouter();
-   const searchParams = useSearchParams();
-   const difficulty = searchParams?.get("difficulty") || "medium";
+   const [difficulty, setDifficulty] = useState("medium");
    const [question, setQuestion] = useState<QuestionData | null>(null);
    const [score, setScore] = useState<number>(0);
    const [timeLeft, setTimeLeft] = useState<number>(time);
@@ -69,7 +68,12 @@ export default function GamePage() {
       null
    );
    const [moneyTimeout, setMoneyTimeout] = useState<number>(MONEY_TIMEOUT);
-   const dingSoundRef = useRef<HTMLAudioElement | null>(null);
+
+   useEffect(() => {
+      const params = new URLSearchParams(window.location.search);
+      const difficultyParam = params.get("difficulty") || "medium";
+      setDifficulty(difficultyParam);
+   }, []);
 
    const getNewQuestion = async () => {
       try {
@@ -86,9 +90,6 @@ export default function GamePage() {
          setMoney((prevMoney) => prevMoney + reward);
          setMoneyTimeout(MONEY_TIMEOUT);
          setScore((prevScore) => prevScore + 1);
-         if (dingSoundRef.current) {
-            dingSoundRef.current.play();
-         }
       } else {
          const { newGrid, removedTile } = removeRandomTile(grid);
          if (removedTile) {
