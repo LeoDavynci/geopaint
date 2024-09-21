@@ -104,6 +104,9 @@ body {
    justify-content: center;
    align-items: center;
 }
+.visibility-hidden {
+   visibility: hidden;
+}
 
 .testred {
    background: #ff0000 !important; /* Red */

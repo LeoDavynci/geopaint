@@ -64,6 +64,7 @@ const GameMap: React.FC<GameMapProps> = ({ grid, onTilePlace, gameOver }) => {
          ref={containerRef}
       >
          <div
+            id="grid" // <-- Add this ID so the grid can be captured
             className="grid absolute"
             style={{
                gridTemplateColumns: `repeat(${grid.length}, minmax(0, 1fr))`,
